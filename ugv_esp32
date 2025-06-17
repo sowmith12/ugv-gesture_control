@@ -1,0 +1,132 @@
+#include <esp_now.h>
+#include <WiFi.h>
+
+// Motor driver pins (L293D)
+#define MOTOR1_PIN1 14  // Left motor
+#define MOTOR1_PIN2 27
+#define MOTOR2_PIN1 26  // Right motor
+#define MOTOR2_PIN2 25
+#define ENABLE1 33     // Left motor PWM
+#define ENABLE2 32      // Right motor PWM
+
+// Structure to receive data
+typedef struct struct_message {
+  char command[10];
+} struct_message;
+
+struct_message myData;
+
+// Motor speed (0-255)
+int motorSpeed = 200;
+
+// Callback function that will be executed when data is received
+void OnDataRecv(const esp_now_recv_info* recv_info, const uint8_t *incomingData, int len) {
+  memcpy(&myData, incomingData, sizeof(myData));
+  Serial.print("Received command: ");
+  Serial.println(myData.command);
+  
+  // Execute motor command
+  executeCommand(String(myData.command));
+}
+
+void setup() {
+  Serial.begin(115200);
+  
+  // Initialize motor pins
+  pinMode(MOTOR1_PIN1, OUTPUT);
+  pinMode(MOTOR1_PIN2, OUTPUT);
+  pinMode(MOTOR2_PIN1, OUTPUT);
+  pinMode(MOTOR2_PIN2, OUTPUT);
+  pinMode(ENABLE1, OUTPUT);
+  pinMode(ENABLE2, OUTPUT);
+  
+  // Set motor speed
+  analogWrite(ENABLE1, motorSpeed);
+  analogWrite(ENABLE2, motorSpeed);
+  
+  // Set device as a Wi-Fi Station
+  WiFi.mode(WIFI_STA);
+  
+  // Print MAC address
+  Serial.print("UGV MAC Address: ");
+  Serial.println(WiFi.macAddress());
+  
+  // Init ESP-NOW
+  if (esp_now_init() != ESP_OK) {
+    Serial.println("Error initializing ESP-NOW");
+    return;
+  }
+  
+  // Register callback function
+  esp_now_register_recv_cb(OnDataRecv);
+  
+  Serial.println("UGV ready to receive commands");
+}
+
+void loop() {
+  // Main loop - ESP-NOW handles everything via callback
+  delay(100);
+}
+
+void executeCommand(String command) {
+  if (command == "FORWARD") {
+    moveForward();
+  } else if (command == "BACKWARD") {
+    moveBackward();
+  } else if (command == "LEFT") {
+    turnLeft();
+  } else if (command == "RIGHT") {
+    turnRight();
+  } else if (command == "STOP") {
+    stopMotors();
+  }
+}
+
+void moveForward() {
+  Serial.println("Moving Forward");
+  // Left motor forward
+  digitalWrite(MOTOR1_PIN1, HIGH);
+  digitalWrite(MOTOR1_PIN2, LOW);
+  // Right motor forward
+  digitalWrite(MOTOR2_PIN1, HIGH);
+  digitalWrite(MOTOR2_PIN2, LOW);
+}
+
+void moveBackward() {
+  Serial.println("Moving Backward");
+  // Left motor backward
+  digitalWrite(MOTOR1_PIN1, LOW);
+  digitalWrite(MOTOR1_PIN2, HIGH);
+  // Right motor backward
+  digitalWrite(MOTOR2_PIN1, LOW);
+  digitalWrite(MOTOR2_PIN2, HIGH);
+}
+
+void turnLeft() {
+  Serial.println("Turning Left");
+  // Left motor backward
+  digitalWrite(MOTOR1_PIN1, LOW);
+  digitalWrite(MOTOR1_PIN2, HIGH);
+  // Right motor forward
+  digitalWrite(MOTOR2_PIN1, HIGH);
+  digitalWrite(MOTOR2_PIN2, LOW);
+}
+
+void turnRight() {
+  Serial.println("Turning Right");
+  // Left motor forward
+  digitalWrite(MOTOR1_PIN1, HIGH);
+  digitalWrite(MOTOR1_PIN2, LOW);
+  // Right motor backward
+  digitalWrite(MOTOR2_PIN1, LOW);
+  digitalWrite(MOTOR2_PIN2, HIGH);
+}
+
+void stopMotors() {
+  Serial.println("Stopping Motors");
+  // Stop all motors
+  digitalWrite(MOTOR1_PIN1, LOW);
+  digitalWrite(MOTOR1_PIN2, LOW);
+  digitalWrite(MOTOR2_PIN1, LOW);
+  digitalWrite(MOTOR2_PIN2, LOW);
+}
