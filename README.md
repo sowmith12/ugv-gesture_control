@@ -39,7 +39,7 @@
 | SDA     | GPIO 21  |
 | SCL     | GPIO 22  |
 
-### L298N to UGV ESP32 (example)
+### L298N to UGV ESP32 
 
 | L298N   | ESP32    |
 |---------|----------|
@@ -55,12 +55,12 @@
 
 ## 🧠 Code Highlights
 
-### Controller (sketch_jun16a.ino)
+### Controller (controller_esp32)
 - Uses `Wire.h` and `MPU6050` library.
 - Calculates pitch and roll from MPU data.
 - Maps angle ranges to directions and sends them via ESP-NOW.
 
-### UGV (sketch_jun16b.ino)
+### UGV (ugv_esp32)
 - Receives direction characters via ESP-NOW.
 - Controls motor GPIOs based on received command.
 
@@ -90,11 +90,6 @@
 
 ---
 
-## 📜 License
-
-This project is licensed under the [MIT License](LICENSE).
-
----
 
 ## 👤 Author
 
