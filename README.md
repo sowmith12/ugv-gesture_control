@@ -55,7 +55,7 @@
 
 ## 🧠 Code Highlights
 
-### Controller (controller_esp32)
+### Controller (controller_esp)
 - Uses `Wire.h` and `MPU6050` library.
 - Calculates pitch and roll from MPU data.
 - Maps angle ranges to directions and sends them via ESP-NOW.
