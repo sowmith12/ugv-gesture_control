@@ -98,7 +98,7 @@ The glove reads hand gestures (tilt) and sends motion commands to the UGV, which
 
 ## 🎥 Demo
 
-👉 [Project Video](https://github.com/sowmith12/ugv-gesture_control)
+👉 [Project Video](https://github.com/sowmith12/ugv-gesture_control/blob/main/GESTURE_CONTROL_UGV.mp4)
 
 ---
 
